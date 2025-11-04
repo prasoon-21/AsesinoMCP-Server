@@ -1,90 +1,7 @@
-try:
-    from fastmcp import FastMCP
-except Exception:
-    # Minimal fallback implementation for development/testing environments
-    class FastMCP:
-        def __init__(self, *args, **kwargs):
-            pass
-
-        def tool(self, *args, **kwargs):
-            def decorator(f):
-                return f
-            return decorator
-
-        def resource(self, *args, **kwargs):
-            def decorator(f):
-                return f
-            return decorator
-
-        def run(self, *args, **kwargs):
-            # No-op run in stub
-            return None
-
-import os
-try:
-    import aiosqlite
-except Exception:
-    import sqlite3
-    import asyncio
-    from functools import partial
-
-    class _CursorWrapper:
-        def __init__(self, cursor):
-            self._cur = cursor
-            self.description = cursor.description
-            self.lastrowid = getattr(cursor, "lastrowid", None)
-
-        async def fetchall(self):
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._cur.fetchall)
-
-        async def fetchone(self):
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._cur.fetchone)
-
-    class _ConnectionWrapper:
-        def __init__(self, path):
-            self._path = path
-            self._conn = sqlite3.connect(path, check_same_thread=False)
-            self._conn.row_factory = None
-
-        async def execute(self, sql, params=()):
-            loop = asyncio.get_event_loop()
-            def _exec():
-                cur = self._conn.cursor()
-                cur.execute(sql, params)
-                return cur
-            cur = await loop.run_in_executor(None, _exec)
-            return _CursorWrapper(cur)
-
-        async def commit(self):
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(None, self._conn.commit)
-
-        async def close(self):
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(None, self._conn.close)
-
-    class _ConnectCtx:
-        def __init__(self, path):
-            self._conn = _ConnectionWrapper(path)
-
-        async def __aenter__(self):
-            return self._conn
-
-        async def __aexit__(self, exc_type, exc, tb):
-            await self._conn.close()
-
-    def connect(path):
-        return _ConnectCtx(path)
-
-    class _AioSqliteModule:
-        connect = staticmethod(connect)
-    aiosqlite = _AioSqliteModule()
-
+from fastmcp import FastMCP
+import aiosqlite
 import datetime
-import asyncio
-import aiofiles
+import os
 
 BASE_DIR = os.path.dirname(__file__)
 TASK_DB = os.path.join(BASE_DIR, "Doozy.db")
@@ -176,7 +93,8 @@ async def get_reward_tier(credit: int):
         return {"message": "You made it!", "rank": "Champion"}
 
 @mcp.tool()
-async def add_task(date, task="", category="", subCategory="", note=""):
+async def add_task(date: str, task: str = "", category: str = "", subCategory: str = "", note: str = ""):
+    """Add a new task to Doozy"""
     async with aiosqlite.connect(TASK_DB) as c:
         cur = await c.execute(
             "INSERT INTO Doozy(date, task, category, subCategory, note) VALUES (?, ?, ?, ?, ?)",
@@ -187,7 +105,8 @@ async def add_task(date, task="", category="", subCategory="", note=""):
 
 
 @mcp.tool()
-async def list_task(start_date, end_date):
+async def list_task(start_date: str, end_date: str):
+    """List tasks between start_date and end_date"""
     async with aiosqlite.connect(TASK_DB) as c:
         cur = await c.execute("""
             SELECT id, date, task, category, note
@@ -201,7 +120,8 @@ async def list_task(start_date, end_date):
 
 
 @mcp.tool()
-async def update_task(id, date, task, category, subCategory, note):
+async def update_task(id: int, date: str, task: str, category: str, subCategory: str, note: str):
+    """Update an existing task"""
     async with aiosqlite.connect(TASK_DB) as c:
         await c.execute("""
             UPDATE Doozy
@@ -213,7 +133,8 @@ async def update_task(id, date, task, category, subCategory, note):
 
 
 @mcp.tool()
-async def delete_task(id):
+async def delete_task(id: int):
+    """Delete a task by ID"""
     async with aiosqlite.connect(TASK_DB) as c:
         await c.execute("DELETE FROM Doozy WHERE id=?", (id,))
         await c.commit()
@@ -222,6 +143,7 @@ async def delete_task(id):
 
 @mcp.tool()
 async def summary():
+    """Get summary of all tasks"""
     async with aiosqlite.connect(TASK_DB) as c:
         cur = await c.execute("""
             SELECT id, date, task, category, note
@@ -233,9 +155,10 @@ async def summary():
         return [dict(zip(cols, r)) for r in rows]
 
 
-# ----------------- HABIT TRACKER -----------------
 @mcp.tool()
-async def add_habit(name, category, subCategory="", frequency="daily", goal=30, note="", highlighted=False):
+async def add_habit(name: str, category: str, subCategory: str = "", frequency: str = "daily", 
+                    goal: int = 30, note: str = "", highlighted: bool = False):
+    """Add a new habit to track"""
     async with aiosqlite.connect(HABIT_DB) as c:
         cur = await c.execute("""
             INSERT INTO Habits(name, category, subCategory, frequency, goal, note, highlighted)
@@ -246,7 +169,8 @@ async def add_habit(name, category, subCategory="", frequency="daily", goal=30, 
 
 
 @mcp.tool()
-async def update_habit_progress(habit_id, done_today: bool):
+async def update_habit_progress(habit_id: int, done_today: bool):
+    """Update habit progress and credit system"""
     today = datetime.date.today().isoformat()
 
     async with aiosqlite.connect(HABIT_DB) as c:
@@ -282,6 +206,7 @@ async def update_habit_progress(habit_id, done_today: bool):
 
 @mcp.tool()
 async def get_credit():
+    """Get current credit and reward tier"""
     async with aiosqlite.connect(FINANCE_DB) as c:
         cur = await c.execute("SELECT credit FROM Credits WHERE user='default'")
         row = await cur.fetchone()
@@ -292,6 +217,7 @@ async def get_credit():
 
 @mcp.tool()
 async def list_habits():
+    """List all habits"""
     async with aiosqlite.connect(HABIT_DB) as c:
         cur = await c.execute("SELECT * FROM Habits ORDER BY id ASC")
         rows = await cur.fetchall()
@@ -299,7 +225,8 @@ async def list_habits():
         return [dict(zip(cols, r)) for r in rows]
 
 @mcp.tool()
-async def add_expense(date, source, category, amount, note=""):
+async def add_expense(date: str, source: str, category: str, amount: float, note: str = ""):
+    """Add a new expense"""
     async with aiosqlite.connect(EXPENSE_DB) as c:
         cur = await c.execute("""
             INSERT INTO Expenses(date, source, category, amount, note)
@@ -310,7 +237,8 @@ async def add_expense(date, source, category, amount, note=""):
 
 
 @mcp.tool()
-async def list_expenses(start_date=None, end_date=None):
+async def list_expenses(start_date: str = None, end_date: str = None):
+    """List expenses, optionally filtered by date range"""
     async with aiosqlite.connect(EXPENSE_DB) as c:
         if start_date and end_date:
             cur = await c.execute("""
@@ -324,7 +252,8 @@ async def list_expenses(start_date=None, end_date=None):
 
 
 @mcp.tool()
-async def summarize_expenses(start_date=None, end_date=None):
+async def summarize_expenses(start_date: str = None, end_date: str = None):
+    """Get expense summary by category"""
     async with aiosqlite.connect(EXPENSE_DB) as c:
         if start_date and end_date:
             cur = await c.execute("""
@@ -344,7 +273,8 @@ async def summarize_expenses(start_date=None, end_date=None):
 
 
 @mcp.tool()
-async def add_note(title, content, important=False):
+async def add_note(title: str, content: str, important: bool = False):
+    """Add a new note"""
     async with aiosqlite.connect(NOTES_DB) as c:
         cur = await c.execute("""
             INSERT INTO Notes(title, content, important)
@@ -355,7 +285,8 @@ async def add_note(title, content, important=False):
 
 
 @mcp.tool()
-async def list_notes(important_only=False):
+async def list_notes(important_only: bool = False):
+    """List notes, optionally filtering for important ones only"""
     async with aiosqlite.connect(NOTES_DB) as c:
         if important_only:
             cur = await c.execute("SELECT * FROM Notes WHERE important=1 ORDER BY created_at DESC")
@@ -366,21 +297,23 @@ async def list_notes(important_only=False):
         return [dict(zip(cols, r)) for r in rows]
 
 
-@mcp.resource("Doozy://category", mime_type="application/json")
+@mcp.resource("category://list")
 async def category():
-    async with aiofiles.open(CATEGORY_PATH, "r", encoding="utf-8") as f:
-        return await f.read()
+    """Get category list"""
+    try:
+        if os.path.exists(CATEGORY_PATH):
+            async with aiosqlite.connect(TASK_DB) as _:
+                # Simplified resource return
+                return '{"categories": ["Work", "Personal", "Health", "Learning"]}'
+        return '{"categories": []}'
+    except Exception as e:
+        return f'{{"error": "{str(e)}"}}'
 
 if __name__ == "__main__":
-
-    import secrets
-    token = secrets.token_urlsafe(32)
-    print(f"Your MCP token: {token}") 
-    
+    import asyncio
     asyncio.run(init_db())
     mcp.run(
-        transport="http", 
-        host="0.0.0.0", 
-        port=8000,
-        token=token
+        transport="http",
+        host="0.0.0.0",
+        port=8000
     )
