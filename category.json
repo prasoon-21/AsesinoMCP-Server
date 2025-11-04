@@ -1,0 +1,181 @@
+{
+    "Professional": [
+    "Work Projects",
+    "Meetings",
+    "Career Development",
+    "Office Supplies",
+    "Networking",
+    "Work Travel"
+    ],
+
+    "Hobby": [
+        "Arts & Crafts",
+        "Photography",
+        "Music",
+        "Gardening",
+        "Collecting",
+        "DIY Projects"
+    ],
+
+    "Personal": [
+        "Daily Routine",
+        "Self-Care",
+        "Journaling",
+        "Planning",
+        "Relaxation",
+        "Personal Goals"
+    ],
+
+    "Games": [
+        "Video Games",
+        "Board Games",
+        "Mobile Games",
+        "Online Multiplayer",
+        "Game Accessories",
+        "In-Game Purchases"
+    ],
+
+    "Food & Groceries": [
+        "Groceries",
+        "Restaurants",
+        "Fast Food",
+        "Coffee/Tea",
+        "Snacks",
+        "Meal Delivery"
+    ],
+    
+    "Housing & Utilities": [
+        "Rent/Mortgage",
+        "Electricity",
+        "Water",
+        "Internet",
+        "Maintenance",
+        "Furniture"
+    ],
+
+    "Transportation": [
+        "Fuel",
+        "Public Transport",
+        "Taxi/Rideshare",
+        "Vehicle Maintenance",
+        "Parking",
+        "Insurance"
+    ],
+
+    "Health & Fitness": [
+        "Doctor Visits",
+        "Medicine",
+        "Gym Membership",
+        "Supplements",
+        "Therapy",
+        "Health Insurance"
+    ],
+
+    "Entertainment & Leisure": [
+        "Movies",
+        "Music",
+        "Games",
+        "Sports Events",
+        "Streaming Subscriptions",
+        "Hobbies"
+    ],
+
+    "Education & Self-Development": [
+        "Books",
+        "Courses",
+        "Workshops",
+        "Online Learning",
+        "Tuition",
+        "Stationery"
+    ],
+
+    "Personal Care": [
+        "Haircut",
+        "Spa",
+        "Skincare",
+        "Makeup",
+        "Hygiene Products",
+        "Salon"
+    ],
+
+    "Clothing & Accessories": [
+        "Casual Wear",
+        "Formal Wear",
+        "Footwear",
+        "Jewelry",
+        "Bags",
+        "Laundry"
+    ],
+
+    "Technology & Gadgets": [
+        "Phone",
+        "Computer",
+        "Software",
+        "Accessories",
+        "Repairs",
+        "Subscriptions"
+    ],
+
+    "Financial Expenses": [
+        "Bank Fees",
+        "Loan Payments",
+        "Investments",
+        "Taxes",
+        "Savings",
+        "Insurance"
+    ],
+
+    "Gifts & Donations": [
+        "Gifts to Family",
+        "Gifts to Friends",
+        "Charities",
+        "Religious Donations",
+        "Events",
+        "Tips"
+    ],
+    
+    "Travel & Vacations": [
+        "Flights",
+        "Hotels",
+        "Transportation",
+        "Meals",
+        "Souvenirs",
+        "Activities"
+    ],
+
+    "Family & Children": [
+        "Childcare",
+        "Education",
+        "Toys",
+        "Clothing",
+        "Allowances",
+        "Family Events"
+    ],
+
+    "Pets & Animals": [
+        "Food",
+        "Vet",
+        "Toys",
+        "Grooming",
+        "Insurance",
+        "Accessories"
+    ],
+
+    "Miscellaneous / Other": [
+        "Subscriptions",
+        "Emergency",
+        "Unknown",
+        "One-time Purchases",
+        "Repairs",
+        "Others"
+    ],
+
+    "Habit": [
+    "Morning Routine",
+    "Exercise Habit",
+    "Reading Habit",
+    "Meditation Practice",
+    "Healthy Eating",
+    "Sleep Schedule"
+    ]
+}
