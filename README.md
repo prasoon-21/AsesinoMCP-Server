@@ -75,7 +75,7 @@ Your growth, visualized.
 
 ## ☁️ Hosted on FastMCP Cloud
 
-Deploy **AsesinoMCP** seamlessly on [FastMCP Cloud](https://AsesinoMCP.fastmcp.app/mcp) and access it globally.
+Deploy **AsesinoMCP** seamlessly on [FastMCP Cloud](https://fastmcp.cloud/binary-asesino/AsesinoMCP/deployments) and access it globally.
 
 ---
 
@@ -118,5 +118,6 @@ vii.) check the server by - list/tools, initialization, and seeking for thr prom
 **Developed by:** Prasoon Mishra  
 **Company:** Binary Asesino (B³ – Building Brick by Brick)  
 **Email:** binaryasesino@gmail.com
+
 
 
