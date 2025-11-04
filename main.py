@@ -12,7 +12,6 @@ NOTES_DB = os.path.join(BASE_DIR, "Notes.db")
 CATEGORY_PATH = os.path.join(BASE_DIR, "category.json")
 
 mcp = FastMCP("AsesinoMCP")
-
 async def init_db():
     async with aiosqlite.connect(TASK_DB) as c:
         await c.execute("""
@@ -80,7 +79,7 @@ async def init_db():
         await c.commit()
 
 
-async def get_reward_tier(credit: int):
+def get_reward_tier(credit: int):
     if credit < 50:
         return {"message": "You have guts 💪", "rank": "Newbie"}
     elif credit < 100:
